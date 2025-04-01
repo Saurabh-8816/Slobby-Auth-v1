@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Slobby</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+        }
+        .glow {
+            animation: glow 2s infinite;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-br from-[#6E3AFF] via-[#AD49E1] to-[#6EACDA] px-4 py-6 font-sans text-white">
+
+    <div class="flex-grow flex items-center justify-center">
+        <div class="w-full max-w-md text-center">
+            <!-- Animated Background Elements -->
+            <div class="absolute top-10 left-10 w-20 h-20 bg-white/20 rounded-full floating"></div>
+            <div class="absolute bottom-10 right-10 w-24 h-24 bg-white/30 rounded-full floating"></div>
+            
+            <!-- Logo and Title -->
+            <div class="flex flex-col items-center relative">
+                <div class="relative mb-6">
+                    <div class="h-32 w-32 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center">
+                        <img src="/logo2.png" class="h-[86px] w-[86px] absolute top-5 left-4" alt="Lobby Logo">
+                    </div>
+                </div>
+                <h1 class="text-4xl font-bold">Slobby</h1>
+                <p class="text-white/80 text-lg mb-8">Le M*******D</p>
+            </div>
+            
+            <!-- Description -->
+            <p class="text-white/90 mb-6">The ultimate business app to streamline your workflow and boost productivity.</p>
+            
+            <!-- Continue Button -->
+            <div class="flex justify-center">
+                <button action='intoduction.html' 
+                        class="relative overflow-hidden flex items-center justify-center w-14 h-14 rounded-full bg-white text-[#1c4d70] shadow-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-300 transform hover:scale-110">
+                    <i class="fas fa-arrow-right text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slobby - Business Assistance Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    .animate-pulse {
+      animation: pulse 2s infinite;
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    .radio-card {
+      transition: all 0.3s ease;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .radio-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    .radio-card.selected {
+      border-color: #FF6F61;
+      background-color: rgba(255, 111, 97, 0.1);
+    }
+    .next-button {
+      transition: all 0.3s ease;
+    }
+    .next-button:hover {
+      transform: translateX(5px);
+      background-color: #FF5849;
+    }
+    .translate-button {
+      transition: all 0.3s ease;
+    }
+    .translate-button:hover {
+      transform: scale(1.1);
+      background-color: #FF5849;
+    }
+    body {
+      background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+    }
+    input, textarea, select {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      transition: all 0.3s ease;
+    }
+    input:hover, textarea:hover, select:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #FF6F61;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 111, 97, 0.3);
+    }
+    select option {
+      background-color: #1F2937;
+      color: #FFFFFF;
+    }
+    .header-gradient {
+      background: linear-gradient(to bottom right, #6E3AFF, #AD49E1, #6EACDA);
+    }
+    .slobby-logo {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    .form-container {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to bottom right, #6E3AFF, #AD49E1, #6EACDA);
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8">
+  <!-- Header with Logo -->
+  <header class="w-full max-w-4xl mb-8 px-4">
+    <div class="header-gradient rounded-lg p-6 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <img src="/logo2.png" alt="Slobby Logo" class="slobby-logo h-12 w-12 animate-float">
+        <h1 class="text-3xl font-bold absolute right-[200px] text-white">lobby</h1>
+      </div>
+      <button onclick="translateToHindi()" class="translate-button bg-white/20 text-white px-4 py-2 rounded-lg flex items-center">
+        <i class="fas fa-language mr-2"></i>
+        <span data-en="हिंदी" data-hi="English">हिंदी</span>
+      </button>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-bar mt-6">
+      <div id="progressFilled" class="progress-fill" style="width: 25%"></div>
+    </div>
+  </header>
+
+  <div class="w-full max-w-2xl mx-4">
+    <!-- Form Container -->
+    <div class="form-container p-8 bg-[#1F2937] border border-white/10 backdrop-blur-sm">
+      <!-- Page 1 -->
+      <div id="page1" class="page active animate-fade-in">
+        <h2 class="text-2xl font-bold text-[#FF6F61] mb-6 flex items-center" data-en="Basic Business Information" data-hi="व्यवसाय की बुनियादी जानकारी">
+          Basic Business Information
+        </h2>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> Is your business new or existing?" data-hi="<span class='text-red-500'>*</span> क्या आपका व्यवसाय नया है या मौजूदा है?">
+              <span class="text-red-500">*</span> Is your business new or existing?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessStatus" value="New" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="New" data-hi="नया">New</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessStatus" value="Existing" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Existing" data-hi="मौजूदा">Existing</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> What is your business name (if any)?" data-hi="<span class='text-red-500'>*</span> आपके व्यवसाय का नाम क्या है (यदि कोई हो)?">
+              <span class="text-red-500">*</span> What is your business name (if any)?
+            </label>
+            <input type="text" name="businessName" required
+                   class="w-full px-4 py-3 rounded-lg transition"
+                   placeholder="Enter your business name">
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> State" data-hi="<span class='text-red-500'>*</span> राज्य">
+                <span class="text-red-500">*</span> State
+              </label>
+              <input type="text" name="state" placeholder="State" required
+                     class="w-full px-4 py-3 rounded-lg transition">
+            </div>
+            <div>
+              <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> City" data-hi="<span class='text-red-500'>*</span> शहर">
+                <span class="text-red-500">*</span> City
+              </label>
+              <input type="text" name="city" placeholder="City" required
+                     class="w-full px-4 py-3 rounded-lg transition">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> What type of business do you run?" data-hi="<span class='text-red-500'>*</span> आप किस प्रकार का व्यवसाय चलाते हैं?">
+              <span class="text-red-500">*</span> What type of business do you run?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessType" value="Product" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Product" data-hi="उत्पाद">Product</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessType" value="Service" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Service" data-hi="सेवा">Service</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> Briefly describe what you sell or provide?" data-hi="<span class='text-red-500'>*</span> संक्षेप में बताएं कि आप क्या बेचते हैं या प्रदान करते हैं?">
+              <span class="text-red-500">*</span> Briefly describe what you sell or provide?
+            </label>
+            <textarea name="description" required rows="3"
+                      class="w-full px-4 py-3 rounded-lg transition"
+                      placeholder="Tell us about your products or services..."></textarea>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-end">
+          <button onclick="showPage('page2')" class="next-button bg-[#FF6F61] text-white px-6 py-3 rounded-lg flex items-center">
+            <span data-en="Next" data-hi="अगला">Next</span> <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Page 2 -->
+      <div id="page2" class="page hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-[#FF6F61] mb-6 flex items-center" data-en="Business Performance" data-hi="व्यवसाय का प्रदर्शन">
+          <i class="fas fa-chart-line mr-3"></i> Business Performance
+        </h2>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> What is your current monthly income range?" data-hi="<span class='text-red-500'>*</span> आपकी वर्तमान मासिक आय सीमा क्या है?">
+              <span class="text-red-500">*</span> What is your current monthly income range?
+            </label>
+            <select name="incomeRange" required
+                    class="w-full px-4 py-3 rounded-lg transition">
+              <option value="" disabled selected data-en="Select income range" data-hi="आय सीमा चुनें">Select income range</option>
+              <option value="0-10k" data-en="₹0 - ₹10,000" data-hi="₹0 - ₹10,000">₹0 - ₹10,000</option>
+              <option value="10k-50k" data-en="₹10,000 - ₹50,000" data-hi="₹10,000 - ₹50,000">₹10,000 - ₹50,000</option>
+              <option value="50k-1L" data-en="₹50,000 - ₹1 Lakh" data-hi="₹50,000 - ₹1 लाख">₹50,000 - ₹1 Lakh</option>
+              <option value="1L+" data-en="₹1 Lakh+" data-hi="₹1 लाख+">₹1 Lakh+</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> How many employees do you have?" data-hi="<span class='text-red-500'>*</span> आपके यहां कितने कर्मचारी हैं?">
+              <span class="text-red-500">*</span> How many employees do you have?
+            </label>
+            <input type="number" name="employees" required
+                   class="w-full px-4 py-3 rounded-lg transition"
+                   placeholder="Enter number of employees">
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> What are your biggest challenges?" data-hi="<span class='text-red-500'>*</span> आपकी सबसे बड़ी चुनौतियां क्या हैं?">
+              <span class="text-red-500">*</span> What are your biggest challenges?
+            </label>
+            <textarea name="challenges" required rows="3"
+                      class="w-full px-4 py-3 rounded-lg transition"
+                      placeholder="Describe your business challenges..."></textarea>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="Do you need financial or any assistance?" data-hi="क्या आपको वित्तीय या किसी सहायता चाहिए?">
+              Do you need financial or any assistance?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="assistance" value="Yes" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Yes" data-hi="हाँ">Yes</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="assistance" value="No" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="No" data-hi="नहीं">No</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="Do you need help with marketing, customer management, or social media?" data-hi="क्या आपको मार्केटिंग, ग्राहक प्रबंधन या सोशल मीडिया की भी ज़रूरत है?">
+              Do you need help with marketing, customer management, or social media?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="marketing" value="Yes" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Yes" data-hi="हाँ">Yes</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="marketing" value="No" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="No" data-hi="नहीं">No</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-between">
+          <button onclick="showPage('page1')" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> <span data-en="Previous" data-hi="पिछला">Previous</span>
+          </button>
+          <button onclick="showPage('page3')" class="next-button bg-[#FF6F61] text-white px-6 py-3 rounded-lg flex items-center">
+            <span data-en="Next" data-hi="अगला">Next</span> <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Page 3 -->
+      <div id="page3" class="page hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-[#FF6F61] mb-6 flex items-center" data-en="Government Schemes" data-hi="सरकारी योजनाएं">
+          <i class="fas fa-landmark mr-3"></i> Government Schemes
+        </h2>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> Have you availed any government scheme or MSME/SME benefits?" data-hi="<span class='text-red-500'>*</span> क्या आपने किसी सरकारी योजना या एमएसएमई/एसएमई लाभ का लाभ उठाया है?">
+              <span class="text-red-500">*</span> Have you availed any government scheme or MSME/SME benefits?
+            </label>
+            <div class="grid grid-cols-3 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="govtScheme" value="Yes" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Yes" data-hi="हाँ">Yes</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="govtScheme" value="No" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="No" data-hi="नहीं">No</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="govtScheme" value="Not Aware" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Not Aware" data-hi="जानकारी नहीं है">Not Aware</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> Are you interested in learning about relevant policies and grants?" data-hi="<span class='text-red-500'>*</span> क्या आप प्रासंगिक नीतियों और अनुदानों के बारे में जानने में रुचि रखते हैं?">
+              <span class="text-red-500">*</span> Are you interested in learning about relevant policies and grants?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="policies" value="Yes" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Yes" data-hi="हाँ">Yes</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="policies" value="No" class="hidden" required>
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="No" data-hi="नहीं">No</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> Business Category" data-hi="<span class='text-red-500'>*</span> व्यापार के प्रकार">
+              <span class="text-red-500">*</span> Business Category
+            </label>
+            <select name="businessType" required
+                    class="w-full px-4 py-3 rounded-lg transition">
+              <option value="" disabled selected data-en="Please Select" data-hi="कृपया चुनें">Please Select</option>
+              <option value="FMCG" data-en="FMCG" data-hi="FMCG">FMCG</option>
+              <option value="Agriculture" data-en="Agriculture" data-hi="कृषि">Agriculture</option>
+              <option value="Transport" data-en="Transport" data-hi="परिवहन">Transport</option>
+              <option value="Retail" data-en="Retail" data-hi="खुदरा">Retail</option>
+              <option value="Manufacturing" data-en="Manufacturing" data-hi="विनिर्माण">Manufacturing</option>
+              <option value="Food" data-en="Food & Beverage" data-hi="खाद्य और पेय">Food & Beverage</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-between">
+          <button onclick="showPage('page2')" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> <span data-en="Previous" data-hi="पिछला">Previous</span>
+          </button>
+          <button onclick="showPage('page4')" class="next-button bg-[#FF6F61] text-white px-6 py-3 rounded-lg flex items-center">
+            <span data-en="Next" data-hi="अगला">Next</span> <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Page 4 -->
+      <div id="page4" class="page hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-[#FF6F61] mb-6 flex items-center" data-en="Additional Information" data-hi="अतिरिक्त जानकारी">
+          <i class="fas fa-ellipsis-h mr-3"></i> Additional Information
+        </h2>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block font-medium mb-2" data-en="<span class='text-red-500'>*</span> What do you need immediate help with?" data-hi="<span class='text-red-500'>*</span> आपको किस चीज़ में तत्काल मदद की ज़रूरत है?">
+              <span class="text-red-500">*</span> What do you need immediate help with?
+            </label>
+            <select name="immediateHelp" required
+                    class="w-full px-4 py-3 rounded-lg transition">
+              <option value="" disabled selected data-en="Select an option" data-hi="एक विकल्प चुनें">Select an option</option>
+              <option value="Funding" data-en="Funding" data-hi="फंडिंग">Funding</option>
+              <option value="Marketing" data-en="Marketing" data-hi="मार्केटिंग">Marketing</option>
+              <option value="Registration" data-en="Business Registration" data-hi="व्यवसाय पंजीकरण">Business Registration</option>
+              <option value="Technology" data-en="Technology Setup" data-hi="प्रौद्योगिकी सेटअप">Technology Setup</option>
+              <option value="Other" data-en="Other" data-hi="अन्य">Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="Do you want a step-by-step action plan to grow your business?" data-hi="क्या आप अपने व्यवसाय को बढ़ाने के लिए चरण-दर-चरण कार्य योजना चाहते हैं?">
+              Do you want a step-by-step action plan to grow your business?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessPlan" value="Yes" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="Yes" data-hi="हाँ">Yes</span>
+                </div>
+              </label>
+              <label class="radio-card rounded-lg p-4 cursor-pointer">
+                <input type="radio" name="businessPlan" value="No" class="hidden">
+                <div class="flex items-center">
+                  <div class="w-6 h-6 rounded-full border-2 mr-2 flex-shrink-0"></div>
+                  <span data-en="No" data-hi="नहीं">No</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block font-medium mb-2" data-en="Anything else you'd like to share?" data-hi="क्या आप कुछ और साझा करना चाहेंगे?">
+              Anything else you'd like to share?
+            </label>
+            <textarea name="additionalInfo" rows="3"
+                      class="w-full px-4 py-3 rounded-lg transition"
+                      placeholder="Your additional comments..."></textarea>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-between">
+          <button onclick="showPage('page3')" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> <span data-en="Previous" data-hi="पिछला">Previous</span>
+          </button>
+          <button onclick="submitForm()" class="bg-[#A8B5A2] text-gray-800 px-6 py-3 rounded-lg hover:bg-[#8E9E89] font-bold animate-pulse flex items-center">
+            <span data-en="Submit" data-hi="जमा करें">Submit</span> <i class="fas fa-paper-plane ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Page navigation
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach((page) => {
+        page.classList.add('hidden');
+        page.classList.remove('animate-fade-in');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
+      document.getElementById(pageId).classList.add('animate-fade-in');
+      updateRadioCards();
+      updateProgressBar(pageId);
+    }
+    
+    function updateProgressBar(pageId) {
+      let progress = 25;
+      switch(pageId) {
+        case 'page1': progress = 25; break;
+        case 'page2': progress = 50; break;
+        case 'page3': progress = 75; break;
+        case 'page4': progress = 100; break;
+      }
+      document.getElementById('progressFilled').style.width = progress + '%';
+    }
+    
+    function updateRadioCards() {
+      document.querySelectorAll('.radio-card').forEach(card => {
+        card.classList.remove('selected');
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio && radio.checked) {
+          card.classList.add('selected');
+          const dot = card.querySelector('div > div');
+          if (dot) {
+            dot.classList.add('bg-[#FF6F61]', 'border-[#FF6F61]');
+          }
+        } else {
+          const dot = card.querySelector('div > div');
+          if (dot) {
+            dot.classList.remove('bg-[#FF6F61]', 'border-[#FF6F61]');
+          }
+        }
+      });
+    }
+    
+    // Handle radio card clicks
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.radio-card')) {
+        const card = e.target.closest('.radio-card');
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) {
+          radio.checked = true;
+          updateRadioCards();
+        }
+      }
+    });
+    
+    function submitForm() {
+      // Simple alert instead of the submission page
+      alert('Form submitted successfully!');
+      // Optionally reset the form
+      showPage('page1');
+      document.getElementById('progressFilled').style.width = '25%';
+      document.querySelectorAll('input, textarea, select').forEach(element => {
+        if (element.type !== 'submit' && element.type !== 'button') {
+          element.value = '';
+          if (element.type === 'radio' || element.type === 'checkbox') {
+            element.checked = false;
+          }
+        }
+      });
+      updateRadioCards();
+    }
+    
+    let isHindi = false;
+    function translateToHindi() {
+      isHindi = !isHindi;
+      document.querySelectorAll('[data-en]').forEach(element => {
+        const englishText = element.getAttribute('data-en');
+        const hindiText = element.getAttribute('data-hi');
+        
+        if (isHindi && hindiText) {
+          element.innerHTML = hindiText; // Use innerHTML to preserve <span> tags
+        } else if (englishText) {
+          element.innerHTML = englishText;
+        }
+      });
+      
+      // Update the button text
+      const translateButton = document.querySelector('.translate-button span');
+      if (translateButton) {
+        translateButton.setAttribute('data-en', 'हिंदी');
+        translateButton.setAttribute('data-hi', 'English');
+        if (isHindi) {
+          translateButton.textContent = 'English';
+        } else {
+          translateButton.textContent = 'हिंदी';
+        }
+      }
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      showPage('page1');
+      
+      // Add hover effect to all inputs
+      document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('mouseenter', () => {
+          input.style.transform = 'translateY(-2px)';
+          input.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        });
+        input.addEventListener('mouseleave', () => {
+          input.style.transform = '';
+          input.style.boxShadow = '';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

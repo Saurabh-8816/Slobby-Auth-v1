@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Companion - News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(99, 102, 241, 0.15);
+            transform: translateX(5px);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .settings-panel {
+            transition: all 0.3s ease;
+            transform: translateX(100%);
+        }
+        .settings-panel.active {
+            transform: translateX(0);
+        }
+        .language-option {
+            transition: all 0.2s ease;
+        }
+        .language-option:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        [data-lang="hi"] {
+            display: none;
+        }
+        /* Popup styling */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .popup-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+        .popup-header {
+            padding: 16px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .popup-body {
+            height: calc(100% - 57px);
+        }
+        .popup-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close-popup {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        .close-popup:hover {
+            background-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="h-screen bg-blue-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Popup for Government Schemes -->
+    <div id="schemes-popup" class="popup-overlay">
+        <div class="popup-content dark:bg-gray-800 dark:border-gray-700">
+            <div class="popup-header dark:bg-gray-700 dark:border-gray-600">
+                <h3 class="font-semibold dark:text-white">Government Schemes</h3>
+                <button id="close-popup" class="close-popup dark:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="popup-body">
+                <iframe id="schemes-iframe" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Navigation -->
+    <div class="fixed left-0 top-0 h-full w-16 bg-purple-900 dark:bg-indigo-900/30 backdrop-blur-md flex flex-col items-center justify-center rounded-r-[60px] border-r border-gray-200 dark:border-indigo-900/50 shadow-sm dark:shadow-none">
+        <img src="logo2.png" alt="Logo" class="w-11 h-15 absolute left-1 top-10">
+        <nav class="flex flex-col items-center space-y-8 w-full mt-10">
+            <a href="/confdashboard.html" class="nav-item w-full flex flex-col items-center p-3 rounded-xl group">
+                <i class="fas fa-home text-xl mb-1 text-white dark:text-indigo-400 group-hover:text-white dark:group-hover:text-indigo-300"></i>
+                <span class="text-xs text-white dark:text-indigo-300/80 group-hover:text-white dark:group-hover:text-indigo-200">Home</span>
+            </a>
+            <a href="#" class="nav-item w-full flex flex-col items-center p-3 rounded-xl group bg-indigo-800/20">
+                <i class="fas fa-newspaper text-xl mb-1 text-white dark:text-indigo-400 group-hover:text-white dark:group-hover:text-indigo-300"></i>
+                <span class="text-xs text-white dark:text-indigo-300/80 group-hover:text-white dark:group-hover:text-indigo-200">News</span>
+            </a>
+            <a href="#" id="settings-btn" class="nav-item w-full flex flex-col items-center p-3 rounded-xl group">
+                <i class="fas fa-cog text-xl mb-1 text-white dark:text-indigo-400 group-hover:text-white dark:group-hover:text-indigo-300"></i>
+                <span class="text-xs text-white dark:text-indigo-300/80 group-hover:text-white dark:group-hover:text-indigo-200">Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 p-6 overflow-y-auto z-10 shadow-lg">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Settings</h2>
+            <button id="close-settings" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-times text-gray-500 dark:text-gray-400"></i>
+            </button>
+        </div>
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Appearance</h3>
+            <div class="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <span class="text-gray-700 dark:text-gray-300">Dark Mode</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-indigo-600"></div>
+                </label>
+            </div>
+        </div>
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Language</h3>
+            <div class="space-y-2">
+                <div id="lang-en" class="language-option flex items-center p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 cursor-pointer">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-800 flex items-center justify-center mr-3">
+                        <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">EN</span>
+                    </span>
+                    <span class="text-gray-800 dark:text-gray-200">English</span>
+                    <i class="fas fa-check ml-auto text-indigo-600 dark:text-indigo-400"></i>
+                </div>
+                <div id="lang-hi" class="language-option flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                    <span class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center mr-3">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">HI</span>
+                    </span>
+                    <span class="text-gray-800 dark:text-gray-200">हिंदी (Hindi)</span>
+                    <i class="fas fa-check ml-auto text-indigo-600 dark:text-indigo-400 hidden"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-20 p-8">
+        <div class="flex justify-between items-start mb-12">
+            <div class="animate-fade-in" style="animation-delay: 0.1s">
+                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-indigo-100" data-lang="en">News Feed</h1>
+                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-indigo-100" data-lang="hi">समाचार फ़ीड</h1>
+                <p class="text-xl text-gray-600 dark:text-indigo-200/80" data-lang="en">Stay updated with productivity insights</p>
+                <p class="text-xl text-gray-600 dark:text-indigo-200/80" data-lang="hi">उत्पादकता अंतर्दृष्टि के साथ अपडेट रहें</p>
+            </div>
+            <button class="profile-btn w-10 h-10 bg-purple-800 rounded-xl flex items-center justify-center hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20 transition-all">
+                <i class="fas fa-user text-white"></i>
+            </button>
+        </div>
+
+        <!-- News Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card 1 - Government Schemes -->
+            <div onclick="window.open('https://www.startupindia.gov.in/content/sih/en/government-schemes.html', '_blank')" class="card-hover bg-white p-6 rounded-2xl shadow-md border-l-8 border-blue-500 cursor-pointer flex flex-col items-center text-center dark:bg-indigo-900/30 dark:shadow-none dark:border-blue-600 animate-fade-in" style="animation-delay: 0.2s">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 dark:bg-blue-800/40">
+                    <i class="fas fa-landmark text-blue-600 text-2xl dark:text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="en">Government Schemes</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="hi">सरकारी योजनाएँ</h3>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="en">Get information about various Government sponsored schemes</p>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="hi">विभिन्न सरकारी प्रायोजित योजनाओं के बारे में जानकारी प्राप्त करें</p>
+                <button onclick="window.open('https://www.startupindia.gov.in/content/sih/en/government-schemes.html', '_blank')" 
+        class="mt-4 bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-200 transition dark:bg-blue-800/40 dark:text-blue-400 dark:hover:bg-blue-700/40" 
+        data-lang="en">
+    More info <i class="fas fa-arrow-right ml-1"></i>
+</button>
+<button onclick="window.open('https://www.startupindia.gov.in/content/sih/en/government-schemes.html', '_blank')" 
+        class="mt-4 bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-200 transition dark:bg-blue-800/40 dark:text-blue-400 dark:hover:bg-blue-700/40" 
+        data-lang="hi">
+    अधिक जानकारी <i class="fas fa-arrow-right ml-1"></i>
+</button>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-hover bg-white p-6 rounded-2xl shadow-md border-l-8 border-green-500 cursor-pointer flex flex-col items-center text-center dark:bg-indigo-900/30 dark:shadow-none dark:border-green-600 animate-fade-in" style="animation-delay: 0.3s">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 dark:bg-green-800/40">
+                    <i class="fas fa-wallet text-green-600 text-2xl dark:text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="en">Account</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="hi">खाता</h3>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="en">Business Account Services & Banking Solutions</p>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="hi">व्यवसाय खाता सेवाएँ और बैंकिंग समाधान</p>
+                <button  class="mt-4 bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-green-200 transition dark:bg-green-800/40 dark:text-green-400 dark:hover:bg-green-700/40" data-lang="en">
+                    More info <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+                <button class="mt-4 bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-green-200 transition dark:bg-green-800/40 dark:text-green-400 dark:hover:bg-green-700/40" data-lang="hi">
+                    अधिक जानकारी <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- Card 3 -->
+            <div onclick="window.open('https://economictimes.indiatimes.com/', '_blank')" class="card-hover bg-white p-6 rounded-2xl shadow-md border-l-8 border-purple-500 cursor-pointer flex flex-col items-center text-center dark:bg-indigo-900/30 dark:shadow-none dark:border-purple-600 animate-fade-in" style="animation-delay: 0.4s">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 dark:bg-purple-800/40">
+                    <i class="fas fa-newspaper text-purple-600 text-2xl dark:text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="en">News</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 dark:text-indigo-100" data-lang="hi">समाचार</h3>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="en">Latest news on business and economy</p>
+                <p class="text-gray-600 text-sm dark:text-indigo-200/80" data-lang="hi">व्यवसाय और अर्थव्यवस्था पर नवीनतम समाचार</p>
+                <button onclick="window.open('https://economictimes.indiatimes.com/', '_blank')" class="mt-4 bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200 transition dark:bg-purple-800/40 dark:text-purple-400 dark:hover:bg-purple-700/40" data-lang="en">
+                    More info <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+                <button onclick="window.open('https://economictimes.indiatimes.com/', '_blank')" class="mt-4 bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200 transition dark:bg-purple-800/40 dark:text-purple-400 dark:hover:bg-purple-700/40" data-lang="hi">
+                    अधिक जानकारी <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Language Selection Functionality
+        const langEn = document.getElementById('lang-en');
+        const langHi = document.getElementById('lang-hi');
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Hide all language elements
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show only elements for selected language
+            document.querySelectorAll(`[data-lang="${lang}"]`).forEach(el => {
+                el.style.display = 'block';
+            });
+            
+            // Update UI in settings panel
+            if (lang === 'en') {
+                langEn.classList.add('bg-indigo-50', 'dark:bg-indigo-900/30', 'border-indigo-200', 'dark:border-indigo-700');
+                langHi.classList.remove('bg-indigo-50', 'dark:bg-indigo-900/30', 'border-indigo-200', 'dark:border-indigo-700');
+                langHi.querySelector('i').classList.add('hidden');
+                langEn.querySelector('i').classList.remove('hidden');
+            } else {
+                langHi.classList.add('bg-indigo-50', 'dark:bg-indigo-900/30', 'border-indigo-200', 'dark:border-indigo-700');
+                langEn.classList.remove('bg-indigo-50', 'dark:bg-indigo-900/30', 'border-indigo-200', 'dark:border-indigo-700');
+                langEn.querySelector('i').classList.add('hidden');
+                langHi.querySelector('i').classList.remove('hidden');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('language', lang);
+        }
+
+        // Initialize language from localStorage or default to English
+        const savedLang = localStorage.getItem('language') || 'en';
+        setLanguage(savedLang);
+
+        langHi.addEventListener('click', () => {
+            setLanguage('hi');
+        });
+
+        langEn.addEventListener('click', () => {
+            setLanguage('en');
+        });
+
+        // Settings Panel Toggle
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsPanel = document.getElementById('settings-panel');
+        const closeSettings = document.getElementById('close-settings');
+
+        settingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            settingsPanel.classList.add('active');
+        });
+
+        closeSettings.addEventListener('click', () => {
+            settingsPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+                settingsPanel.classList.remove('active');
+            }
+        });
+
+        // Government Schemes Popup
+        const schemesPopup = document.getElementById('schemes-popup');
+        const closePopup = document.getElementById('close-popup');
+        const schemesIframe = document.getElementById('schemes-iframe');
+
+        function openSchemesPopup() {
+            schemesIframe.src = "https://www.startupindia.gov.in/";
+            schemesPopup.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when popup is open
+        }
+
+        function closeSchemesPopup() {
+            schemesPopup.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        closePopup.addEventListener('click', closeSchemesPopup);
+
+        // Close popup when clicking outside of it
+        schemesPopup.addEventListener('click', (e) => {
+            if (e.target === schemesPopup) {
+                closeSchemesPopup();
+            }
+        });
+
+        // Close popup with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && schemesPopup.classList.contains('active')) {
+                closeSchemesPopup();
+            }
+        });
+
+        // Animation trigger on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-fade-in').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Initialize display for current language
+            setLanguage(currentLang);
+        });
+    </script>
+</body>
+</html>
